@@ -51,7 +51,42 @@ public class CarRecordDao {
                 record.getId()
         );
     }
+    public double sumTodayFee() {
+        String sql = """
+            SELECT IFNULL(SUM(fee), 0)
+            FROM car_record
+            WHERE DATE(out_time) = CURDATE()
+            """;
+        Double result = jdbcTemplate.queryForObject(sql, Double.class);
+        return result == null ? 0.0 : result;
+    }
 
+    public int countTodayOut() {
+        String sql = """
+            SELECT COUNT(*)
+            FROM car_record
+            WHERE DATE(out_time) = CURDATE()
+            """;
+        Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
+        return result == null ? 0 : result;
+    }
+
+
+    public int countInParking() {
+        String sql = """
+            SELECT COUNT(*)
+            FROM car_record
+            WHERE status = 'IN'
+            """;
+        Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
+        return result == null ? 0 : result;
+    }
+
+    public double sumAllFee() {
+        String sql = "SELECT IFNULL(SUM(fee), 0) FROM car_record";
+        Double result = jdbcTemplate.queryForObject(sql, Double.class);
+        return result == null ? 0.0 : result;
+    }
 
 }
 

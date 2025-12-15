@@ -5,6 +5,8 @@ import com.example.carfee.entity.CarRecord;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.time.Duration;
 
 
@@ -56,6 +58,18 @@ public class CarService {
        }
        return 5 + (int) (hours - 1) * 3;
     }
+    public Map<String, Object> statistics() {
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("todayFee", carRecordDao.sumTodayFee());
+        result.put("todayOutCount", carRecordDao.countTodayOut());
+        result.put("inParkingCount", carRecordDao.countInParking());
+        result.put("totalFee", carRecordDao.sumAllFee());
+
+        return result;
+    }
+
 
 
 }
