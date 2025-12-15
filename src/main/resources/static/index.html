@@ -10,19 +10,30 @@
 <div class="container">
     <h1>🚗 车辆收费管理系统</h1>
 
+    <!-- ⭐ 车牌识别 -->
+    <div class="card">
+        <h2>📷 上传图片识别车牌</h2>
+        <input type="file" id="plateImage" accept="image/*">
+        <button onclick="recognizePlate()">识别车牌</button>
+        <p id="ocrResult"></p>
+    </div>
+
+    <!-- 入场 -->
     <div class="card">
         <h2>车辆入场</h2>
-        <input id="plateEnter" placeholder="输入车牌号">
+        <input id="plateEnter" placeholder="输入或识别车牌号">
         <button onclick="carEnter()">入场</button>
     </div>
 
+    <!-- 出场 -->
     <div class="card">
         <h2>车辆出场</h2>
-        <input id="plateOut" placeholder="输入车牌号">
+        <input id="plateOut" placeholder="输入或识别车牌号">
         <button onclick="carOut()">出场</button>
         <p id="fee"></p>
     </div>
 
+    <!-- 统计 -->
     <div class="card">
         <h2>统计信息</h2>
         <button onclick="loadStats()">刷新统计</button>
@@ -31,5 +42,37 @@
 </div>
 
 <script src="/js/app.js"></script>
+
+<script>
+function recognizePlate() {
+    const fileInput = document.getElementById("plateImage");
+    if (!fileInput.files.length) {
+        alert("请先选择图片");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    fetch("/ocr/plate", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(plate => {
+        document.getElementById("ocrResult").innerText =
+            "识别结果：" + plate;
+
+        // ⭐ 自动填入入场 & 出场
+        document.getElementById("plateEnter").value = plate;
+        document.getElementById("plateOut").value = plate;
+    })
+    .catch(() => {
+        document.getElementById("ocrResult").innerText = "识别失败";
+    });
+}
+</script>
+
 </body>
 </html>
+
