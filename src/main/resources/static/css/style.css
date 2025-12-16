@@ -4,7 +4,7 @@ body {
 }
 
 .container {
-    width: 500px;
+    width: 520px;
     margin: 40px auto;
 }
 
@@ -29,3 +29,27 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
+/* ===== 统计表格 ===== */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.stats-table th,
+.stats-table td {
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    text-align: center;
+}
+
+.stats-table th {
+    background-color: #f3f4f6;
+    font-weight: bold;
+}
+
+.stats-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+

@@ -4,71 +4,43 @@ import java.time.LocalDateTime;
 
 public class CarRecord {
 
-    private Long id;              // 主键
-    private String plateNumber;   // 车牌号
-    private LocalDateTime inTime; // 入场时间
-    private LocalDateTime outTime;// 离场时间
-    private Double fee;           // 停车费用
-    private String status;        // in / out
+    private Long id;
+    private String plateNumber;
+    private LocalDateTime inTime;
+    private LocalDateTime outTime;
+    private Double fee;
+    private String status;      // IN / OUT
 
-    // ===== 构造方法 =====
+    // ====== 新增（冲 A 关键） ======
+    private Boolean paid;       // 是否已支付
+    private LocalDateTime payTime;
+
     public CarRecord() {}
 
-    public CarRecord(String plateNumber, LocalDateTime inTime, String status) {
-        this.plateNumber = plateNumber;
-        this.inTime = inTime;
-        this.status = status;
-    }
-
     // ===== getter / setter =====
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getPlateNumber() { return plateNumber; }
+    public void setPlateNumber(String plateNumber) { this.plateNumber = plateNumber; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDateTime getInTime() { return inTime; }
+    public void setInTime(LocalDateTime inTime) { this.inTime = inTime; }
 
-    public String getPlateNumber() {
-        return plateNumber;
-    }
+    public LocalDateTime getOutTime() { return outTime; }
+    public void setOutTime(LocalDateTime outTime) { this.outTime = outTime; }
 
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
-    }
+    public Double getFee() { return fee; }
+    public void setFee(Double fee) { this.fee = fee; }
 
-    public LocalDateTime getInTime() {
-        return inTime;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setInTime(LocalDateTime inTime) {
-        this.inTime = inTime;
-    }
+    public Boolean getPaid() { return paid; }
+    public void setPaid(Boolean paid) { this.paid = paid; }
 
-    public LocalDateTime getOutTime() {
-        return outTime;
-    }
-
-    public void setOutTime(LocalDateTime outTime) {
-        this.outTime = outTime;
-    }
-
-    public Double getFee() {
-        return fee;
-    }
-
-    public void setFee(Double fee) {
-        this.fee = fee;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public LocalDateTime getPayTime() { return payTime; }
+    public void setPayTime(LocalDateTime payTime) { this.payTime = payTime; }
 }
 
 
