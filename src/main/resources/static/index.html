@@ -9,11 +9,23 @@
 
 <div class="container">
     <h1>🚗 车辆收费管理系统</h1>
+        <!-- 外网/局域网地址与 ngrok 检测已移除 -->
 
     <div class="card">
-        <h2>📷 上传图片识别车牌</h2>
+        <h3>外网/局域网访问地址（可选）</h3>
+        <p style="font-size:13px;color:#666">如果手机无法访问 localhost，请填写电脑在局域网中的可访问地址或 ngrok 的公网地址，例如： http://192.168.1.100:8080 或 https://xxxxx.ngrok-free.dev</p>
+        <input id="baseUrl" placeholder="示例： http://192.168.1.100:8080 或 https://xxxx.ngrok-free.dev" style="width:60%">
+        <button id="detectNgrokBtn" style="margin-left:8px" onclick="detectNgrok()">检测并填充局域网地址</button>
+        <span id="detectNgrokStatus" style="margin-left:8px;color:#666"></span>
+    </div>
+
+    <div class="card">
+        <h2>车牌识别</h2>
         <input type="file" id="plateImage" accept="image/*">
-        <button onclick="uploadPlateImage()">识别车牌</button>
+        <button onclick="uploadPlateImage()">识别图片</button>
+        <div style="margin-top:8px;">
+            <img id="platePreview" src="#" alt="预览" style="max-width:240px; display:none; border:1px solid #eee; padding:4px; background:#fff" />
+        </div>
     </div>
 
     <div class="card">
@@ -29,13 +41,20 @@
         <p id="fee"></p>
     </div>
 
-    <!-- ⭐ 支付区域（完整闭环） -->
     <div class="card" id="payArea" style="display:none">
         <h2>扫码支付</h2>
         <img id="qrImg" src="/qrcode.png" width="180">
         <br><br>
         <button onclick="pay()">模拟支付</button>
         <p id="payMsg" style="color:green;font-weight:bold"></p>
+
+        <div id="payLinkArea" style="margin-top:12px;display:none">
+            <label>如果微信扫码无法直接打开，请复制以下链接到浏览器打开：</label>
+            <div style="margin-top:6px;">
+                <a id="payLink" href="#" target="_blank" style="word-break:break-all;color:blue;text-decoration:underline"></a>
+            </div>
+            <button id="copyPayLink" style="margin-top:6px">复制链接</button>
+        </div>
     </div>
 
     <div class="card">
@@ -53,7 +72,7 @@
     </div>
 </div>
 
-<script src="/js/app.js"></script>
+<script src="/js/app.js" defer></script>
 </body>
 </html>
 

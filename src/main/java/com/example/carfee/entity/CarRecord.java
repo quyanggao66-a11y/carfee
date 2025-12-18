@@ -11,9 +11,10 @@ public class CarRecord {
     private Double fee;
     private String status;      // IN / OUT
 
-    // ====== 新增（冲 A 关键） ======
+    // 支付相关字段（用于二维码支付闭环）
     private Boolean paid;       // 是否已支付
     private LocalDateTime payTime;
+
 
     public CarRecord() {}
 

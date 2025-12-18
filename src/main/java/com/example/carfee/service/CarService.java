@@ -54,9 +54,12 @@ public class CarService {
     }
 
 
-    // 模拟支付（冲 A 核心）
-    public void pay(Long recordId) {
-        carRecordDao.markPaid(recordId, LocalDateTime.now());
+    // 模拟支付（按记录 ID 支付）
+    public void payByPlate(String plate) {
+        var record = carRecordDao.findLatestOutByPlate(plate);
+        if (record == null) throw new RuntimeException("未找到该车的出场记录");
+        if (Boolean.TRUE.equals(record.getPaid())) throw new RuntimeException("该记录已支付");
+        carRecordDao.markPaid(record.getId(), LocalDateTime.now());
     }
 
     private double calculateFee(LocalDateTime inTime, LocalDateTime outTime) {
@@ -72,6 +75,10 @@ public class CarService {
         result.put("inParkingCount", carRecordDao.countInParking());
         result.put("totalFee", carRecordDao.sumAllFee());
         return result;
+    }
+
+    public CarRecord findLatestOutByPlate(String plate) {
+        return carRecordDao.findLatestOutByPlate(plate);
     }
 }
 
