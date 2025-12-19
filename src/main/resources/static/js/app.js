@@ -1,6 +1,5 @@
 // 简洁、修复后的前端脚本：仅保留入场/出场/识别/统计功能
 // 调试提示（可删除）
-console.log('app.js loaded');
 
 let currentPlate = null;
 let currentFee = 0;
@@ -57,7 +56,11 @@ function carOut() {
             let origin = (document.getElementById('baseUrl') && document.getElementById('baseUrl').value.trim()) || window.location.origin;
             if (!/^https?:\/\//i.test(origin)) origin = window.location.origin;
             const payUrl = `${origin.replace(/\/$/, '')}/mobile/pay?plate=${encodeURIComponent(plate)}`;
-            const qr = document.getElementById('qrImg'); if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(payUrl);
+            const qr = document.getElementById('qrImg');
+            if (qr) {
+                qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(payUrl);
+                qr.style.display = 'block';
+            }
 
             const payLinkArea = document.getElementById('payLinkArea');
             const payLink = document.getElementById('payLink');
