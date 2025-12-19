@@ -117,71 +117,7 @@ function pay() {
     })();
 }
 
-// 检测局域网 IPv4（WebRTC），用于填写 baseUrl，如 http://192.168.1.100:8080
-function detectLocalIPv4(timeout = 2000) {
-    return new Promise((resolve) => {
-        const ips = new Set();
-        let pc = null;
-        try {
-            pc = new RTCPeerConnection({ iceServers: [] });
-        } catch (e) {
-            resolve(null);
-            return;
-        }
-        try { pc.createDataChannel(''); } catch (e) {}
-
-        pc.onicecandidate = (e) => {
-            if (!e || !e.candidate) {
-                try { pc.close(); } catch (e) {}
-                pc = null;
-                for (const ip of ips) {
-                    if (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(ip)) {
-                        resolve(ip); return;
-                    }
-                }
-                resolve(null); return;
-            }
-            const m = e.candidate.candidate.match(/([0-9]{1,3}(?:\.[0-9]{1,3}){3})/);
-            if (m) ips.add(m[1]);
-        };
-
-        pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(() => { try { pc.close(); } catch (e) {} resolve(null); });
-
-        setTimeout(() => {
-            if (pc) try { pc.close(); } catch (e) {}
-            for (const ip of ips) { if (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(ip)) { resolve(ip); return; } }
-            resolve(null);
-        }, timeout);
-    });
-}
-
-async function detectLocalAndFill() {
-    const status = document.getElementById('detectNgrokStatus');
-    const baseEl = document.getElementById('baseUrl');
-    if (status) status.innerText = '检测局域网IP中...';
-    try {
-        const ip = await detectLocalIPv4(2000);
-        if (ip) {
-            const proto = window.location.protocol || 'http:';
-            const url = `${proto}//${ip}:8080`;
-            if (baseEl) baseEl.value = url;
-            if (status) status.innerText = '检测到局域网 IP: ' + url;
-            alert('检测到局域网 IP: ' + url + '\n请确保手机与电脑处于同一局域网并能访问该地址');
-            return url;
-        } else {
-            if (status) status.innerText = '未检测到局域网 IP';
-            alert('未检测到局域网 IP，请手动填写 baseUrl（例如 http://192.168.1.100:8080）');
-            return null;
-        }
-    } catch (e) {
-        if (status) status.innerText = '检测失败';
-        console.error('detectLocalAndFill error', e);
-        alert('检测局域网 IP 失败: ' + (e && e.message ? e.message : e));
-        return null;
-    }
-}
-
-try { window.detectNgrok = detectLocalAndFill; } catch(e) {}
+// 已移除自动检测局域网 IP 的实现（改为手动输入 baseUrl）
 
 // ================== OCR 识别 ==================
 function uploadPlateImage() {
