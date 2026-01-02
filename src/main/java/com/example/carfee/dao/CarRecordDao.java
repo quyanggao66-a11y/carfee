@@ -4,10 +4,10 @@ import com.example.carfee.entity.CarRecord;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.sql.Timestamp;
 import org.springframework.dao.DataAccessException;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,7 +17,7 @@ public class CarRecordDao {
 
     public CarRecordDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        // 在启动时尝试确保需要的列存在（向后兼容数据库未更新的情况）
+        // 启动时确保列存在（兼容旧数据库）
         try {
             jdbcTemplate.execute("ALTER TABLE car_record ADD COLUMN IF NOT EXISTS paid TINYINT(1) DEFAULT 0");
         } catch (Exception ignored) { }
@@ -41,15 +41,15 @@ public class CarRecordDao {
         );
     }
 
-    // 防止重复入场（⭐ 修复点 1）
+    // 防止重复入场
     public int countInParkingByPlate(String plate) {
         String sql = """
             SELECT COUNT(*)
             FROM car_record
             WHERE plate_number = ? AND status = 'IN'
         """;
-
-        return jdbcTemplate.queryForObject(sql, Integer.class, plate);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, plate);
+        return count == null ? 0 : count;
     }
 
     // 查询在场车辆
@@ -69,7 +69,7 @@ public class CarRecordDao {
         return list.isEmpty() ? null : list.get(0);
     }
 
-    // 查询最新的已出场但可能未支付的记录
+    // 查询最新出场记录
     public CarRecord findLatestOutByPlate(String plate) {
         String sql = """
             SELECT * FROM car_record
@@ -103,9 +103,8 @@ public class CarRecordDao {
         );
     }
 
-    // ================== 支付（简易实现） ==================
+    // ================== 支付 ==================
     public void markPaid(Long recordId, LocalDateTime payTime) {
-        // 使用参数占位符来设置 pay_time 和 paid，避免数据库方言或拼写错误造成的问题
         String sql = """
             UPDATE car_record
             SET pay_time = ?, paid = ?
@@ -115,45 +114,39 @@ public class CarRecordDao {
         try {
             jdbcTemplate.update(sql, ts, 1, recordId);
         } catch (DataAccessException ex) {
-            // 如果是因为列不存在导致的语法错误，尝试检查信息模式并添加列，然后重试一次
-            String msg = ex.getMessage() == null ? "" : ex.getMessage();
-            String causeMsg = ex.getCause() == null || ex.getCause().getMessage() == null ? "" : ex.getCause().getMessage();
-            if (msg.contains("Unknown column") || causeMsg.contains("Unknown column") || msg.contains("bad SQL grammar")) {
-                try {
-                    ensurePayColumnsExist();
-                } catch (Exception ignored) {}
-                try {
-                    jdbcTemplate.update(sql, ts, 1, recordId);
-                    return;
-                } catch (DataAccessException ex2) {
-                    ex2.printStackTrace();
-                    throw ex2;
-                }
+            try {
+                ensurePayColumnsExist();
+                jdbcTemplate.update(sql, ts, 1, recordId);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw ex;
             }
-            ex.printStackTrace();
-            throw ex;
         }
     }
 
-    // 检查并在需要时添加 pay_time / paid 列（兼容不同 MySQL 版本）
+    // 检查并补齐列（warning 已处理）
     private void ensurePayColumnsExist() {
-        try {
-            Integer cnt = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'car_record' AND COLUMN_NAME = 'pay_time'",
-                    Integer.class);
-            if (cnt == null || cnt == 0) {
-                jdbcTemplate.execute("ALTER TABLE car_record ADD COLUMN pay_time DATETIME NULL");
-            }
-        } catch (Exception ignored) {}
+        Integer cnt = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS " +
+                        "WHERE TABLE_SCHEMA = DATABASE() " +
+                        "AND TABLE_NAME = 'car_record' " +
+                        "AND COLUMN_NAME = 'pay_time'",
+                Integer.class
+        );
+        if (cnt == null || cnt == 0) {
+            jdbcTemplate.execute("ALTER TABLE car_record ADD COLUMN pay_time DATETIME NULL");
+        }
 
-        try {
-            Integer cnt2 = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'car_record' AND COLUMN_NAME = 'paid'",
-                    Integer.class);
-            if (cnt2 == null || cnt2 == 0) {
-                jdbcTemplate.execute("ALTER TABLE car_record ADD COLUMN paid TINYINT(1) DEFAULT 0");
-            }
-        } catch (Exception ignored) {}
+        Integer cnt2 = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS " +
+                        "WHERE TABLE_SCHEMA = DATABASE() " +
+                        "AND TABLE_NAME = 'car_record' " +
+                        "AND COLUMN_NAME = 'paid'",
+                Integer.class
+        );
+        if (cnt2 == null || cnt2 == 0) {
+            jdbcTemplate.execute("ALTER TABLE car_record ADD COLUMN paid TINYINT(1) DEFAULT 0");
+        }
     }
 
     // ================== 统计 ==================
@@ -163,7 +156,8 @@ public class CarRecordDao {
             FROM car_record
             WHERE status = 'IN'
         """;
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        return count == null ? 0 : count;
     }
 
     public int countTodayOut() {
@@ -172,23 +166,27 @@ public class CarRecordDao {
             FROM car_record
             WHERE DATE(out_time) = CURDATE()
         """;
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        return count == null ? 0 : count;
     }
 
     public double sumTodayFee() {
         String sql = """
-            SELECT IFNULL(SUM(fee), 0)
+            SELECT SUM(fee)
             FROM car_record
             WHERE DATE(out_time) = CURDATE()
         """;
-        return jdbcTemplate.queryForObject(sql, Double.class);
+        Double sum = jdbcTemplate.queryForObject(sql, Double.class);
+        return sum == null ? 0.0 : sum;
     }
 
     public double sumAllFee() {
-        String sql = "SELECT IFNULL(SUM(fee), 0) FROM car_record";
-        return jdbcTemplate.queryForObject(sql, Double.class);
+        String sql = "SELECT SUM(fee) FROM car_record";
+        Double sum = jdbcTemplate.queryForObject(sql, Double.class);
+        return sum == null ? 0.0 : sum;
     }
 }
+
 
 
 
