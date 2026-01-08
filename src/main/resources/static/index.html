@@ -2,75 +2,89 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>车辆收费管理系统</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+    <h1 class="page-title">🚗 车辆收费管理系统</h1>
 
-<div class="container">
-    <h1>🚗 车辆收费管理系统</h1>
-        <!-- 外网/局域网地址与 ngrok 检测已移除 -->
-
-    <div class="card">
-        <h3>外网/局域网访问地址（可选）</h3>
-        <p style="font-size:13px;color:#666">如果手机无法访问 localhost，请填写电脑在局域网中的可访问地址或 ngrok 的公网地址，例如： http://192.168.1.100:8080 或 https://xxxxx.ngrok-free.dev</p>
-        <input id="baseUrl" placeholder="示例： http://192.168.1.100:8080 或 https://xxxx.ngrok-free.dev（请手动填写）" style="width:60%">
-    </div>
-
-    <div class="card">
-        <h2>车牌识别</h2>
-        <input type="file" id="plateImage" accept="image/*">
-        <button onclick="uploadPlateImage()">识别图片</button>
-        <div style="margin-top:8px;">
-            <img id="platePreview" src="#" alt="预览" style="max-width:240px; display:none; border:1px solid #eee; padding:4px; background:#fff" />
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>车辆入场</h2>
-        <input id="plateEnter" placeholder="输入或识别车牌号">
-        <button onclick="carEnter()">入场</button>
-    </div>
-
-    <div class="card">
-        <h2>车辆出场</h2>
-        <input id="plateOut" placeholder="输入或识别车牌号">
-        <button onclick="carOut()">出场</button>
-        <p id="fee"></p>
-    </div>
-
-    <div class="card" id="payArea" style="display:none">
-        <h2>扫码支付</h2>
-        <img id="qrImg" src="" width="180" style="display:none">
-        <br><br>
-        <button onclick="pay()">模拟支付</button>
-        <p id="payMsg" style="color:green;font-weight:bold"></p>
-
-        <div id="payLinkArea" style="margin-top:12px;display:none">
-            <label>如果微信扫码无法直接打开，请复制以下链接到浏览器打开：</label>
-            <div style="margin-top:6px;">
-                <a id="payLink" href="#" target="_blank" style="word-break:break-all;color:blue;text-decoration:underline"></a>
+    <div class="container">
+        <!-- 左侧列：基础设置和车牌识别 -->
+        <div class="card form-card">
+            <h2>系统设置</h2>
+            <div class="form-group">
+                <label class="form-label">外网/局域网访问地址</label>
+                <p style="font-size:12px;color:#666;margin:8px 0 12px 0;">如果手机无法访问localhost，请填写电脑在局域网中的可访问地址或ngrok的公网地址</p>
+                <input id="baseUrl" class="form-input" placeholder="示例：http://192.168.1.100:8080 或 https://xxxx.ngrok-free.dev">
             </div>
-            <button id="copyPayLink" style="margin-top:6px">复制链接</button>
+        </div>
+
+        <div class="card feature-card">
+            <h2>车牌识别</h2>
+            <div class="form-group">
+                <input type="file" id="plateImage" accept="image/*" class="form-input">
+            </div>
+            <button class="btn btn-success" onclick="uploadPlateImage()">识别图片</button>
+            <div style="margin-top:10px;">
+                <img id="platePreview" src="#" alt="预览" class="image-preview" />
+            </div>
+        </div>
+
+        <!-- 右侧列：车辆出入管理 -->
+        <div class="card feature-card">
+            <h2>车辆入场</h2>
+            <div class="form-group">
+                <label class="form-label">车牌号码</label>
+                <input id="plateEnter" class="form-input" placeholder="输入或识别车牌号">
+            </div>
+            <button class="btn btn-success btn-block" onclick="carEnter()">登记入场</button>
+        </div>
+
+        <div class="card feature-card">
+            <h2>车辆出场</h2>
+            <div class="form-group">
+                <label class="form-label">车牌号码</label>
+                <input id="plateOut" class="form-input" placeholder="输入或识别车牌号">
+            </div>
+            <button class="btn btn-warning btn-block" onclick="carOut()">办理出场</button>
+            <div id="fee" class="fee-display"></div>
+        </div>
+
+        <!-- 底部：支付区域（隐藏） -->
+        <div class="card feature-card" id="payArea" style="display:none">
+            <h2>扫码支付</h2>
+            <img id="qrImg" src="" width="180" class="image-preview">
+            <br>
+            <button class="btn" onclick="pay()">模拟支付</button>
+            <p id="payMsg" style="color:green;font-weight:bold;margin:10px 0;"></p>
+
+            <div id="payLinkArea" style="margin-top:12px;display:none">
+                <label>如果微信扫码无法直接打开，请复制以下链接到浏览器打开：</label>
+                <div style="margin-top:6px;">
+                    <a id="payLink" href="#" target="_blank" style="word-break:break-all;color:blue;text-decoration:underline"></a>
+                </div>
+                <button id="copyPayLink" class="btn">复制链接</button>
+            </div>
+        </div>
+
+        <!-- 底部：统计信息（跨两列） -->
+        <div class="card stats-card">
+            <h2>统计信息</h2>
+            <button class="btn btn-primary" onclick="loadStats()">刷新统计</button>
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>指标</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+            </table>
         </div>
     </div>
 
-    <div class="card">
-        <h2>统计信息</h2>
-        <button onclick="loadStats()">刷新统计</button>
-        <table class="stats-table">
-            <thead>
-            <tr>
-                <th>指标</th>
-                <th>数值</th>
-            </tr>
-            </thead>
-            <tbody id="statsBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<script src="/js/app.js" defer></script>
+    <script src="/js/app.js" defer></script>
 </body>
 </html>
 

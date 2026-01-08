@@ -1,55 +1,313 @@
+/* ===== 全局样式设置 ===== */
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(120deg, #84fab0, #8fd3f4);
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
+/* ===== 主容器样式 ===== */
 .container {
-    width: 520px;
-    margin: 40px auto;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 两列布局 */
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
+/* ===== 单列模式 - 移动端适配 ===== */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+}
+
+/* ===== 卡片样式 ===== */
 .card {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-input {
-    width: 70%;
-    padding: 8px;
+.card:hover {
+    transform: translateY(-5px);
 }
 
-button {
-    padding: 8px 16px;
-    background: #409eff;
+/* ===== 页面标题 ===== */
+.page-title {
+    grid-column: 1 / -1; /* 跨越所有列 */
+    text-align: center;
+    color: white;
+    margin: 0 0 20px 0;
+    font-size: 32px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* ===== 表单卡片样式 ===== */
+.form-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* ===== 功能卡片样式 ===== */
+.feature-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* ===== 统计卡片样式 ===== */
+.stats-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    grid-column: 1 / -1; /* 跨越所有列 */
+}
+
+/* ===== 表单元素样式 ===== */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #409eff;
+    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+}
+
+/* ===== 按钮样式 ===== */
+.btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #409eff, #36a3f7);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 5px 0;
+    width: auto;
 }
 
-/* ===== 统计表格 ===== */
+.btn:hover {
+    background: linear-gradient(135deg, #3a8ee6, #2a9eff);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* ===== 按钮变体 ===== */
+.btn-success {
+    background: linear-gradient(135deg, #67c23a, #5daf34);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #60b036, #549e2f);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #e6a23c, #d7942d);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #d49535, #c5872a);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f56c6c, #f45151);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #f35656, #f23838);
+}
+
+/* ===== 统计表格样式 ===== */
 .stats-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 12px;
+    margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-size: 13px;
 }
 
 .stats-table th,
 .stats-table td {
-    border: 1px solid #e5e7eb;
-    padding: 8px;
+    border: 1px solid #ebeef5;
+    padding: 10px;
     text-align: center;
+    transition: background-color 0.2s;
 }
 
 .stats-table th {
-    background-color: #f3f4f6;
-    font-weight: bold;
+    background: linear-gradient(135deg, #409eff, #36a3f7);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 12px;
 }
 
 .stats-table tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: #f8f9fa;
+}
+
+.stats-table tr:hover {
+    background-color: #e6f7ff;
+}
+
+/* ===== 信息展示区域 ===== */
+.info-display {
+    background: #f0f9eb;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #67c23a;
+    margin: 15px 0;
+}
+
+.info-title {
+    font-weight: 600;
+    color: #606266;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.info-content {
+    color: #909399;
+    font-size: 13px;
+}
+
+/* ===== 分隔线样式 ===== */
+.divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #dcdfe6, transparent);
+    margin: 20px 0;
+}
+
+/* ===== 特殊卡片：欢迎信息 ===== */
+.welcome-card {
+    grid-column: 1 / -1; /* 跨越所有列 */
+    text-align: center;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    color: #333;
+}
+
+.welcome-card .card {
+    background: transparent;
+    box-shadow: none;
+}
+
+/* ===== 按钮组布局 ===== */
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button-group .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* ===== 预览图像样式 ===== */
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border: 1px solid #eee;
+    padding: 4px;
+    background: #fff;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+/* ===== 支付区域样式 ===== */
+.payment-area {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+/* ===== 费用显示样式 ===== */
+.fee-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e74c3c;
+    margin-top: 10px;
+}
+
+/* ===== 响应式调整 ===== */
+@media (max-width: 992px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-title {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .button-group .btn {
+        min-width: auto;
+    }
+    
+    body {
+        padding: 10px;
+    }
 }
 

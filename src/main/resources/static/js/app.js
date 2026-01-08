@@ -137,6 +137,12 @@ function uploadPlateImage() {
             if (enterEl) enterEl.value = data.plate;
             if (outEl) outEl.value = data.plate;
             alert('识别成功：' + data.plate);
+            
+            // 识别完成后隐藏图片预览
+            const preview = document.getElementById('platePreview');
+            if (preview) {
+                preview.style.display = 'none';
+            }
         })
         .catch(err => { console.error(err); alert('识别失败'); });
 }
@@ -193,4 +199,3 @@ try {
         });
     });
 } catch (e) { console.warn('添加文件输入监听失败', e); }
-
